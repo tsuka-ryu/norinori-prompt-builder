@@ -85,6 +85,9 @@
     color:#04201d;border-color:var(--teal);font-weight:700;
     box-shadow:0 0 14px -2px var(--teal);
   }
+  .opt .ja{display:block;font-size:11px;color:var(--dim);margin-top:2px;letter-spacing:.2px;font-weight:400}
+  .opt:hover .ja{color:var(--teal)}
+  .opt.on .ja{color:rgba(4,32,29,.75)}
 
   .field{margin-top:6px}
   .field label{display:block;font-size:12px;color:var(--dim);margin-bottom:6px;letter-spacing:.5px}
@@ -145,47 +148,70 @@
   </header>
 
   <div class="grid">
+    <!-- 画風 -->
+    <div class="card full">
+      <div class="tag">01 / Style — 画風</div>
+      <div class="opts" id="art"></div>
+    </div>
+
     <!-- 被写体 -->
     <div class="card">
-      <div class="tag">01 / Subject — 被写体</div>
+      <div class="tag">02 / Subject — 被写体</div>
       <div class="opts" id="subject"></div>
     </div>
 
     <!-- 服装 -->
     <div class="card">
-      <div class="tag">02 / Outfit — 服装</div>
+      <div class="tag">03 / Outfit — 服装</div>
       <div class="opts" id="outfit"></div>
     </div>
 
     <!-- ポーズ -->
     <div class="card">
-      <div class="tag">03 / Pose — ポーズ・表情</div>
+      <div class="tag">04 / Pose — ポーズ・表情</div>
       <div class="opts" id="pose"></div>
     </div>
 
     <!-- 場所 -->
     <div class="card">
-      <div class="tag">04 / Scene — 場所・時間</div>
+      <div class="tag">05 / Scene — 場所・時間</div>
       <div class="opts" id="scene"></div>
     </div>
 
     <!-- 背景の光 -->
     <div class="card full">
-      <div class="tag">05 / Lighting — 背景・光源</div>
+      <div class="tag">06 / Lighting — 背景・光源</div>
       <div class="opts" id="light"></div>
+    </div>
+
+    <!-- 参照 -->
+    <div class="card full">
+      <div class="tag">07 / References — 参照</div>
+      <div class="field">
+        <label>参照画像 URL（任意・先頭に入る / 例: https://s.mj.run/xxxx）</label>
+        <input type="text" id="refurl" placeholder="https://s.mj.run/...">
+      </div>
+      <div class="field" style="margin-top:12px">
+        <label>Profile コード（任意・--profile）</label>
+        <input type="text" id="profile" placeholder="例: pyq4o4w">
+      </div>
     </div>
 
     <!-- カスタム + パラメータ -->
     <div class="card full">
-      <div class="tag">06 / Params — 仕上げ</div>
+      <div class="tag">08 / Params — 仕上げ</div>
       <div class="field">
         <label>追加したい単語（任意・カンマ区切り）</label>
         <input type="text" id="extra" placeholder="例: holding melon soda, neon bokeh">
       </div>
       <div class="opts" id="ar" style="margin-top:14px"></div>
+      <div class="slider-row"><label>Chaos (--chaos)</label>
+        <input type="range" id="chaos" min="0" max="100" step="1" value="0">
+        <span class="val" id="chaosv">0</span></div>
       <div class="slider-row"><label>Style Weight (--sw)</label>
         <input type="range" id="sw" min="0" max="1000" step="10" value="100">
         <span class="val" id="swv">100</span></div>
+      <label class="toggle-omni"><input type="checkbox" id="useRaw"> Raw モード（--raw）を付ける</label>
       <label class="toggle-omni"><input type="checkbox" id="useOmni">
         キャラ固定を使う（Omni Reference / --ow を付ける ※GPU 2倍）</label>
       <div class="slider-row" id="owRow" style="opacity:.4;pointer-events:none">
@@ -203,6 +229,7 @@
     </div>
     <pre id="out"></pre>
     <div class="actions">
+      <button class="btn" id="rand">🎲 RANDOM</button>
       <button class="btn" id="copy">⧉ COPY</button>
       <button class="btn ghost" id="reset">↺ RESET</button>
     </div>
@@ -212,21 +239,105 @@
 
 <script>
 const DATA = {
-  subject: ["anime girl","two anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair"],
-  outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee"],
-  pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window"],
-  scene: ["empty classroom at sunset","convenience store at midnight","amusement park at night","snowy street in daylight","dim arcade at night","neon-lit alley at night","rooftop under blue sky","bedroom with old CRT computer"],
-  light: ["orange light through windows","bright white store light, wet asphalt","ferris wheel lights, neon bokeh","blue sky, snow reflection","colorful machine lights glowing","car headlight flare, puddle reflections","warm interior light","monitor glow in a dark room"],
-  ar: ["--ar 16:9","--ar 9:16","--ar 1:1","--ar 4:5"]
+  art: ["soft painterly anime, muted pastels","delicate watercolor brushwork, hazy light","melancholic storybook illustration","vivid lo-fi MV anime, high saturation","glitchy VHS aesthetic, film grain, sparkles","90s retro anime cel look","cinematic anime still, soft film grain"],
+  subject: ["anime girl","two anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair","anime catgirl, silver hair, cat ears","anime girl, long wavy hair, side profile","tan gyaru girl, aqua eyes, drill twintails"],
+  outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee","black maid dress with white apron","white sundress and straw hat","glossy silver futuristic jacket","green satin dress, jewelry","bridal dress with veil"],
+  pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window","expressionless soft stare, melancholy","holding skirt hem, looking back","eyes closed grin, double peace sign","pointing toy gun at camera, smirk","tongue out, sparkle in eyes"],
+  scene: ["empty classroom at sunset","convenience store at midnight","amusement park at night","snowy street in daylight","dim arcade at night","neon-lit alley at night","rooftop under blue sky","bedroom with old CRT computer","snowy forest in pale daylight","sunlit wheat field","sunny beach shore at noon","victorian sitting room by tall windows","earth seen from space","inside a car at night"],
+  light: ["orange light through windows","bright white store light, wet asphalt","ferris wheel lights, neon bokeh","blue sky, snow reflection","colorful machine lights glowing","car headlight flare, puddle reflections","warm interior light","monitor glow in a dark room","soft overcast snow light","warm backlight through wheat","hazy seaside daylight","glitchy VHS sparkle highlights","teal neon city glow"],
+  ar: ["--ar 16:9","--ar 4:3","--ar 9:16","--ar 1:1"]
 };
 
-const sel = {subject:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 16:9"};
+const JA = {
+  // art
+  "soft painterly anime, muted pastels":"淡い絵画調・くすみパステル",
+  "delicate watercolor brushwork, hazy light":"繊細な水彩タッチ・霞んだ光",
+  "melancholic storybook illustration":"物憂げな絵本イラスト",
+  "vivid lo-fi MV anime, high saturation":"鮮やかなロフィMV風・高彩度",
+  "glitchy VHS aesthetic, film grain, sparkles":"グリッチVHS風・粒状・キラキラ",
+  "90s retro anime cel look":"90年代レトロセル画風",
+  "cinematic anime still, soft film grain":"映画のワンシーン風・軽い粒状感",
+  // subject
+  "anime girl":"女の子",
+  "two anime girls":"女の子2人",
+  "anime girl, twin tails":"ツインテの女の子",
+  "anime girl, long black hair":"黒髪ロングの女の子",
+  "anime girl, blonde twin tails":"金髪ツインテの女の子",
+  "anime girl, short messy hair":"短めくしゃ髪の女の子",
+  "anime catgirl, silver hair, cat ears":"銀髪・猫耳の少女",
+  "anime girl, long wavy hair, side profile":"巻き髪ロング・横顔",
+  "tan gyaru girl, aqua eyes, drill twintails":"褐色ギャル・水色瞳・縦ロール",
+  // outfit
+  "school uniform":"制服",
+  "oversized hoodie and choker":"ビッグパーカー＋チョーカー",
+  "silver puffy jacket":"シルバーのダウン",
+  "sequined sheer dress":"スパンコールの透けドレス",
+  "casual streetwear":"カジュアルなストリート服",
+  "winter coat and scarf":"冬コート＋マフラー",
+  "denim jacket over white tee":"白T＋デニムジャケット",
+  "black maid dress with white apron":"黒メイド服＋白エプロン",
+  "white sundress and straw hat":"白サンドレス＋麦わら帽子",
+  "glossy silver futuristic jacket":"光沢シルバーの近未来ジャケット",
+  "green satin dress, jewelry":"緑サテンのドレス＋アクセ",
+  "bridal dress with veil":"ベール付きウェディングドレス",
+  // pose
+  "peace sign, big smile":"ピース＋満面の笑み",
+  "cool confident expression":"クールで自信げ",
+  "surprised expression, blushing":"驚き顔＋赤面",
+  "laughing, looking at camera":"笑いながらこっちを見る",
+  "dynamic pose pointing at camera":"カメラを指差すダイナミックポーズ",
+  "selfie angle, wide lens":"自撮りアングル・広角",
+  "looking out the window":"窓の外を見ている",
+  "expressionless soft stare, melancholy":"無表情で物憂げな眼差し",
+  "holding skirt hem, looking back":"裾をつまんで振り返る",
+  "eyes closed grin, double peace sign":"目を閉じた笑顔＋ダブルピース",
+  "pointing toy gun at camera, smirk":"カメラに銃を向けてニヤリ",
+  "tongue out, sparkle in eyes":"舌出し＋瞳キラキラ",
+  // scene
+  "empty classroom at sunset":"夕暮れの誰もいない教室",
+  "convenience store at midnight":"深夜のコンビニ",
+  "amusement park at night":"夜の遊園地",
+  "snowy street in daylight":"昼間の雪の街",
+  "dim arcade at night":"夜の薄暗いゲーセン",
+  "neon-lit alley at night":"夜のネオンの路地",
+  "rooftop under blue sky":"青空の屋上",
+  "bedroom with old CRT computer":"旧型PCのある寝室",
+  "snowy forest in pale daylight":"淡い光の雪の森",
+  "sunlit wheat field":"陽の差す麦畑",
+  "sunny beach shore at noon":"昼下がりの砂浜",
+  "victorian sitting room by tall windows":"大窓のあるヴィクトリア調の居間",
+  "earth seen from space":"宇宙から見た地球",
+  "inside a car at night":"夜の車内",
+  // light
+  "orange light through windows":"窓から差すオレンジの光",
+  "bright white store light, wet asphalt":"白い店内灯＋濡れたアスファルト",
+  "ferris wheel lights, neon bokeh":"観覧車の光＋ネオンの玉ボケ",
+  "blue sky, snow reflection":"青空＋雪の照り返し",
+  "colorful machine lights glowing":"筐体のカラフルな光",
+  "car headlight flare, puddle reflections":"ヘッドライトの光＋水たまりの反射",
+  "warm interior light":"暖かい室内光",
+  "monitor glow in a dark room":"暗い部屋のモニターの光",
+  "soft overcast snow light":"曇り空の柔らかな雪明かり",
+  "warm backlight through wheat":"麦越しの暖かな逆光",
+  "hazy seaside daylight":"霞んだ海辺の陽光",
+  "glitchy VHS sparkle highlights":"グリッチ風のキラめき",
+  "teal neon city glow":"青緑ネオンの街明かり",
+  // ar
+  "--ar 16:9":"横長 16:9",
+  "--ar 4:3":"ややワイド 4:3",
+  "--ar 9:16":"縦長 9:16",
+  "--ar 1:1":"正方形 1:1"
+};
+
+const sel = {art:null,subject:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 16:9"};
 
 function buildGroup(id, multi=false){
   const box = document.getElementById(id);
   DATA[id].forEach(txt=>{
     const b = document.createElement('div');
-    b.className='opt'; b.textContent=txt;
+    b.className='opt'; b.dataset.en=txt;
+    const ja=JA[txt];
+    b.innerHTML = txt + (ja? "<span class='ja'>"+ja+"</span>" : "");
     b.onclick=()=>{
       if(id==='ar'){
         [...box.children].forEach(c=>c.classList.remove('on'));
@@ -239,17 +350,24 @@ function buildGroup(id, multi=false){
     box.appendChild(b);
   });
 }
-['subject','outfit','pose','scene','light','ar'].forEach(g=>buildGroup(g));
+['art','subject','outfit','pose','scene','light','ar'].forEach(g=>buildGroup(g));
 // default ar
 document.querySelectorAll('#ar .opt')[0].classList.add('on');
 
 const swEl=document.getElementById('sw'), swv=document.getElementById('swv');
 const owEl=document.getElementById('ow'), owv=document.getElementById('owv');
+const chaosEl=document.getElementById('chaos'), chaosv=document.getElementById('chaosv');
 const useOmni=document.getElementById('useOmni'), owRow=document.getElementById('owRow');
+const useRaw=document.getElementById('useRaw');
+const refurl=document.getElementById('refurl'), profile=document.getElementById('profile');
 const extra=document.getElementById('extra'), out=document.getElementById('out');
 
 swEl.oninput=()=>{swv.textContent=swEl.value;render()};
 owEl.oninput=()=>{owv.textContent=owEl.value;render()};
+chaosEl.oninput=()=>{chaosv.textContent=chaosEl.value;render()};
+useRaw.onchange=render;
+refurl.oninput=render;
+profile.oninput=render;
 useOmni.onchange=()=>{
   owRow.style.opacity=useOmni.checked?1:.4;
   owRow.style.pointerEvents=useOmni.checked?'auto':'none';
@@ -264,14 +382,25 @@ function render(){
   const ex=extra.value.trim();
   const l2=[sel.scene,sel.light,ex].filter(Boolean).join(', ');
 
-  const body=[l1,l2].filter(Boolean).join(',\n');
+  const body=[sel.art,l1,l2].filter(Boolean).join(',\n');
   const placeholder = body ? body : "<span class='blank'>← 上から選ぶとここに組み上がります</span>";
 
-  let params=`--niji 7 ${sel.ar} --sw ${swEl.value}`;
-  if(useOmni.checked) params+=` --ow ${owEl.value}`;
+  const head=refurl.value.trim();
+  const prof=profile.value.trim();
 
-  out.innerHTML = (body? body : placeholder) + "\n<span class='param'>"+params+"</span>";
-  out.dataset.plain = (body?body:"") + "\n" + params;
+  const p=[];
+  if(chaosEl.value!=='0') p.push(`--chaos ${chaosEl.value}`);
+  p.push(sel.ar);
+  if(useRaw.checked) p.push('--raw');
+  if(swEl.value!=='100') p.push(`--sw ${swEl.value}`);
+  if(useOmni.checked) p.push(`--ow ${owEl.value}`);
+  if(prof) p.push(`--profile ${prof}`);
+  p.push('--niji 7');
+  const params=p.join(' ');
+
+  const headDisp = head ? "<span class='param'>"+head+"</span> " : "";
+  out.innerHTML = headDisp + (body? body : placeholder) + "\n<span class='param'>"+params+"</span>";
+  out.dataset.plain = (head?head+" ":"") + (body?body:"") + "\n" + params;
 }
 render();
 
@@ -283,10 +412,24 @@ document.getElementById('copy').onclick=()=>{
     setTimeout(()=>{b.textContent=o;b.classList.remove('copied')},1200);
   });
 };
+document.getElementById('rand').onclick=()=>{
+  ['art','subject','outfit','pose','scene','light'].forEach(id=>{
+    const box=document.getElementById(id);
+    const opts=[...box.children];
+    if(!opts.length) return;
+    const pick=opts[Math.floor(Math.random()*opts.length)];
+    opts.forEach(c=>c.classList.remove('on'));
+    pick.classList.add('on');
+    sel[id]=pick.dataset.en;
+  });
+  render();
+};
 document.getElementById('reset').onclick=()=>{
   Object.keys(sel).forEach(k=>{ if(k!=='ar') sel[k]=null; });
-  document.querySelectorAll('.opt.on').forEach(c=>{ if(!c.parentElement.id.includes('ar')) c.classList.remove('on'); });
+  document.querySelectorAll('.opt.on').forEach(c=>{ if(c.parentElement.id!=='ar') c.classList.remove('on'); });
   extra.value=''; swEl.value=100; swv.textContent=100; owEl.value=100; owv.textContent=100;
+  chaosEl.value=0; chaosv.textContent=0; refurl.value=''; profile.value='';
+  useRaw.checked=false;
   useOmni.checked=false; owRow.style.opacity=.4; owRow.style.pointerEvents='none';
   render();
 };
