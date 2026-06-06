@@ -192,8 +192,12 @@
         <input type="text" id="refurl" placeholder="https://s.mj.run/...">
       </div>
       <div class="field" style="margin-top:12px">
+        <label>Style Reference URL（任意・--sref / 絵柄を寄せる）</label>
+        <input type="text" id="sref" placeholder="https://s.mj.run/...">
+      </div>
+      <div class="field" style="margin-top:12px">
         <label>Profile コード（任意・--profile）</label>
-        <input type="text" id="profile" placeholder="例: pyq4o4w">
+        <input type="text" id="profile" placeholder="例: pyq4o4w" value="mkxyah2">
       </div>
     </div>
 
@@ -211,7 +215,7 @@
       <div class="slider-row"><label>Style Weight (--sw)</label>
         <input type="range" id="sw" min="0" max="1000" step="10" value="100">
         <span class="val" id="swv">100</span></div>
-      <label class="toggle-omni"><input type="checkbox" id="useRaw"> Raw モード（--raw）を付ける</label>
+      <label class="toggle-omni"><input type="checkbox" id="useRaw" checked> Raw モード（--raw）を付ける</label>
       <label class="toggle-omni"><input type="checkbox" id="useOmni">
         キャラ固定を使う（Omni Reference / --ow を付ける ※GPU 2倍）</label>
       <div class="slider-row" id="owRow" style="opacity:.4;pointer-events:none">
@@ -395,6 +399,7 @@ const chaosEl=document.getElementById('chaos'), chaosv=document.getElementById('
 const useOmni=document.getElementById('useOmni'), owRow=document.getElementById('owRow');
 const useRaw=document.getElementById('useRaw');
 const refurl=document.getElementById('refurl'), profile=document.getElementById('profile');
+const srefEl=document.getElementById('sref');
 const extra=document.getElementById('extra'), out=document.getElementById('out');
 
 swEl.oninput=()=>{swv.textContent=swEl.value;render()};
@@ -403,6 +408,7 @@ chaosEl.oninput=()=>{chaosv.textContent=chaosEl.value;render()};
 useRaw.onchange=render;
 refurl.oninput=render;
 profile.oninput=render;
+srefEl.oninput=render;
 useOmni.onchange=()=>{
   owRow.style.opacity=useOmni.checked?1:.4;
   owRow.style.pointerEvents=useOmni.checked?'auto':'none';
@@ -423,12 +429,14 @@ function render(){
 
   const head=refurl.value.trim();
   const prof=profile.value.trim();
+  const sref=srefEl.value.trim();
 
   const p=[];
   if(chaosEl.value!=='0') p.push(`--chaos ${chaosEl.value}`);
   p.push(sel.ar);
   if(useRaw.checked) p.push('--raw');
-  if(swEl.value!=='100') p.push(`--sw ${swEl.value}`);
+  if(sref) p.push(`--sref ${sref}`);
+  if(sref && swEl.value!=='100') p.push(`--sw ${swEl.value}`);
   if(useOmni.checked) p.push(`--ow ${owEl.value}`);
   if(prof) p.push(`--profile ${prof}`);
   p.push('--niji 7');
@@ -493,8 +501,8 @@ document.getElementById('reset').onclick=()=>{
   Object.keys(sel).forEach(k=>{ if(k!=='ar') sel[k]=(k==='art'?[]:null); });
   document.querySelectorAll('.opt.on').forEach(c=>{ if(c.parentElement.id!=='ar') c.classList.remove('on'); });
   extra.value=''; swEl.value=100; swv.textContent=100; owEl.value=100; owv.textContent=100;
-  chaosEl.value=0; chaosv.textContent=0; refurl.value=''; profile.value='';
-  useRaw.checked=false;
+  chaosEl.value=0; chaosv.textContent=0; refurl.value=''; profile.value='mkxyah2'; srefEl.value='';
+  useRaw.checked=true;
   useOmni.checked=false; owRow.style.opacity=.4; owRow.style.pointerEvents='none';
   render();
 };
