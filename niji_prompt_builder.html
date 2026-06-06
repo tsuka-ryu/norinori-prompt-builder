@@ -239,7 +239,7 @@
 
 <script>
 const DATA = {
-  art: ["soft painterly anime, muted pastels","delicate watercolor brushwork, hazy light","melancholic storybook illustration","vivid lo-fi MV anime, high saturation","glitchy VHS aesthetic, film grain, sparkles","90s retro anime cel look","cinematic anime still, soft film grain"],
+  art: ["soft painterly anime, muted pastels","delicate watercolor brushwork, hazy light","vivid lo-fi MV anime, high saturation","glitchy VHS aesthetic, film grain, sparkles"],
   subject: ["anime girl","two anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair","anime catgirl, silver hair, cat ears","anime girl, long wavy hair, side profile","tan gyaru girl, aqua eyes, drill twintails"],
   outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee","black maid dress with white apron","white sundress and straw hat","glossy silver futuristic jacket","green satin dress, jewelry","bridal dress with veil"],
   pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window","expressionless soft stare, melancholy","holding skirt hem, looking back","eyes closed grin, double peace sign","pointing toy gun at camera, smirk","tongue out, sparkle in eyes"],
@@ -404,13 +404,31 @@ function render(){
 }
 render();
 
+function copyFeedback(ok){
+  const b=document.getElementById('copy');
+  const o=b.dataset.label||(b.dataset.label=b.textContent);
+  b.textContent= ok ? "✓ COPIED" : "✕ FAILED";
+  b.classList.toggle('copied',ok);
+  setTimeout(()=>{b.textContent=o;b.classList.remove('copied')},1200);
+}
+function legacyCopy(txt){
+  const ta=document.createElement('textarea');
+  ta.value=txt;
+  ta.style.cssText='position:fixed;top:0;left:0;opacity:0';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  let ok=false;
+  try{ ok=document.execCommand('copy'); }catch(e){ ok=false; }
+  document.body.removeChild(ta);
+  return ok;
+}
 document.getElementById('copy').onclick=()=>{
   const txt=(out.dataset.plain||"").trim();
-  navigator.clipboard.writeText(txt).then(()=>{
-    const b=document.getElementById('copy');
-    const o=b.textContent; b.textContent="✓ COPIED"; b.classList.add('copied');
-    setTimeout(()=>{b.textContent=o;b.classList.remove('copied')},1200);
-  });
+  if(navigator.clipboard && window.isSecureContext){
+    navigator.clipboard.writeText(txt).then(()=>copyFeedback(true))
+      .catch(()=>copyFeedback(legacyCopy(txt)));
+  } else {
+    copyFeedback(legacyCopy(txt));
+  }
 };
 document.getElementById('rand').onclick=()=>{
   ['art','subject','outfit','pose','scene','light'].forEach(id=>{
