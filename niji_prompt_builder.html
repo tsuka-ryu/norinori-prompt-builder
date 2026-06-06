@@ -239,7 +239,7 @@
 
 <script>
 const DATA = {
-  art: ["vivid lo-fi MV anime, high saturation","glitchy VHS aesthetic, film grain, sparkles"],
+  art: ["vivid lo-fi MV anime, teal-warm color grade","glossy teal-highlight eyes, heavy cheek blush","VHS grain, chromatic aberration, glitch","sparkle star highlights, neon glow","cel shading, painterly hair highlights","high contrast, dark background, film grain"],
   subject: ["anime girl","two anime girls","three anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair","anime girl, ponytail","anime girl, bob cut","anime girl, hime cut, black hair","anime girl, red hair, braid","anime girl, pink short hair","anime girl, glasses, low ponytail","anime girl, freckles, curly hair","anime girl, half-up hair, hair clips","tan gyaru girl, aqua eyes, drill twintails","tan gyaru girl, bleached blonde hair","kuro gyaru, dark tan, long lashes","gyaru girl, pink twintails, flashy nails","tan gyaru girl, white highlights, heart pupils"],
   outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee","glossy silver futuristic jacket","green satin dress, jewelry","bridal dress with veil","oversized graphic tee and cargo pants","cropped hoodie and baggy jeans","plaid skirt, layered tops, chunky sneakers","varsity jacket and pleated mini skirt","y2k crop top and low-rise jeans","all-black mode outfit, oversized silhouette","monochrome layered coat and wide trousers","asymmetric black dress, structured","long minimalist mode coat","vintage thrift mix, oversized cardigan","retro patterned shirt and corduroy pants","girly frilly blouse and flared skirt","pastel ribbon dress, lace trim","neat blouse and tailored trousers","elegant knit and midi skirt","harajuku decora, colorful layers and hair clips","harajuku pop, clashing colors and accessories"],
   pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window","eyes closed grin, double peace sign","pointing toy gun at camera, smirk","tongue out, sparkle in eyes"],
@@ -250,8 +250,12 @@ const DATA = {
 
 const JA = {
   // art
-  "vivid lo-fi MV anime, high saturation":"鮮やかなロフィMV風・高彩度",
-  "glitchy VHS aesthetic, film grain, sparkles":"グリッチVHS風・粒状・キラキラ",
+  "vivid lo-fi MV anime, teal-warm color grade":"ビビッドLo-fi MV調・ティール＋暖色",
+  "glossy teal-highlight eyes, heavy cheek blush":"うるうるシアン目・濃いチーク",
+  "VHS grain, chromatic aberration, glitch":"VHSノイズ・色収差・グリッチ",
+  "sparkle star highlights, neon glow":"スパークル・ネオン発光",
+  "cel shading, painterly hair highlights":"セル塗り・厚塗り髪ツヤ",
+  "high contrast, dark background, film grain":"高コントラスト・暗背景・粒状",
   // subject
   "anime girl":"女の子",
   "two anime girls":"女の子2人",
@@ -354,7 +358,7 @@ const JA = {
   "--ar 1:1":"正方形 1:1"
 };
 
-const sel = {art:null,subject:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 4:3"};
+const sel = {art:[],subject:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 4:3"};
 
 function buildGroup(id){
   const box = document.getElementById(id);
@@ -367,6 +371,12 @@ function buildGroup(id){
       if(id==='ar'){
         [...box.children].forEach(c=>c.classList.remove('on'));
         b.classList.add('on'); sel.ar=txt; render(); return;
+      }
+      if(id==='art'){
+        b.classList.toggle('on');
+        if(b.classList.contains('on')) sel.art.push(txt);
+        else sel.art = sel.art.filter(x=>x!==txt);
+        render(); return;
       }
       if(b.classList.contains('on')){ b.classList.remove('on'); sel[id]=null; }
       else { [...box.children].forEach(c=>c.classList.remove('on')); b.classList.add('on'); sel[id]=txt; }
@@ -407,7 +417,8 @@ function render(){
   const ex=extra.value.trim();
   const l2=[sel.scene,sel.light,ex].filter(Boolean).join(', ');
 
-  const body=[sel.art,l1,l2].filter(Boolean).join(',\n');
+  const artLine=sel.art.join(', ');
+  const body=[artLine,l1,l2].filter(Boolean).join(',\n');
   const placeholder = body ? body : "<span class='blank'>← 上から選ぶとここに組み上がります</span>";
 
   const head=refurl.value.trim();
@@ -456,7 +467,18 @@ document.getElementById('copy').onclick=()=>{
   }
 };
 document.getElementById('rand').onclick=()=>{
-  ['art','subject','outfit','pose','scene','light'].forEach(id=>{
+  // art: multi-pick 2〜3個盛り合わせ
+  const artOpts=[...document.getElementById('art').children];
+  artOpts.forEach(c=>c.classList.remove('on'));
+  sel.art=[];
+  if(artOpts.length){
+    const n=Math.min(artOpts.length,2+Math.floor(Math.random()*2));
+    [...artOpts].sort(()=>Math.random()-0.5).slice(0,n).forEach(p=>{
+      p.classList.add('on'); sel.art.push(p.dataset.en);
+    });
+  }
+  // 単一選択グループ
+  ['subject','outfit','pose','scene','light'].forEach(id=>{
     const box=document.getElementById(id);
     const opts=[...box.children];
     if(!opts.length) return;
@@ -468,7 +490,7 @@ document.getElementById('rand').onclick=()=>{
   render();
 };
 document.getElementById('reset').onclick=()=>{
-  Object.keys(sel).forEach(k=>{ if(k!=='ar') sel[k]=null; });
+  Object.keys(sel).forEach(k=>{ if(k!=='ar') sel[k]=(k==='art'?[]:null); });
   document.querySelectorAll('.opt.on').forEach(c=>{ if(c.parentElement.id!=='ar') c.classList.remove('on'); });
   extra.value=''; swEl.value=100; swv.textContent=100; owEl.value=100; owv.textContent=100;
   chaosEl.value=0; chaosv.textContent=0; refurl.value=''; profile.value='';
