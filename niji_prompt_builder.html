@@ -150,7 +150,7 @@
   <div class="grid">
     <!-- 画風 -->
     <div class="card full">
-      <div class="tag">01 / Style — 画風</div>
+      <div class="tag">01 / Style — 画風（複数選択OK）</div>
       <div class="opts" id="art"></div>
     </div>
 
@@ -233,6 +233,7 @@
     </div>
     <pre id="out"></pre>
     <div class="actions">
+      <button class="btn" id="preset">★ norinori核</button>
       <button class="btn" id="rand">🎲 RANDOM</button>
       <button class="btn" id="copy">⧉ COPY</button>
       <button class="btn ghost" id="reset">↺ RESET</button>
@@ -243,17 +244,18 @@
 
 <script>
 const DATA = {
-  art: ["vivid lo-fi MV anime, teal-warm color grade","glossy teal-highlight eyes, heavy cheek blush","VHS grain, chromatic aberration, glitch","sparkle star highlights, neon glow","cel shading, painterly hair highlights","high contrast, dark background, film grain"],
+  art: ["vivid lo-fi MV anime, high saturation","vivid lo-fi MV anime, teal-warm color grade","glossy teal-highlight eyes, heavy cheek blush","sparkle star highlights, neon glow","VHS grain, chromatic aberration, glitch","cel shading, painterly hair highlights","high contrast, dark background, film grain"],
   subject: ["anime girl","two anime girls","three anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair","anime girl, ponytail","anime girl, bob cut","anime girl, hime cut, black hair","anime girl, red hair, braid","anime girl, pink short hair","anime girl, glasses, low ponytail","anime girl, freckles, curly hair","anime girl, half-up hair, hair clips","tan gyaru girl, aqua eyes, drill twintails","tan gyaru girl, bleached blonde hair","kuro gyaru, dark tan, long lashes","gyaru girl, pink twintails, flashy nails","tan gyaru girl, white highlights, heart pupils"],
   outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee","glossy silver futuristic jacket","green satin dress, jewelry","bridal dress with veil","oversized graphic tee and cargo pants","cropped hoodie and baggy jeans","plaid skirt, layered tops, chunky sneakers","varsity jacket and pleated mini skirt","y2k crop top and low-rise jeans","all-black mode outfit, oversized silhouette","monochrome layered coat and wide trousers","asymmetric black dress, structured","long minimalist mode coat","vintage thrift mix, oversized cardigan","retro patterned shirt and corduroy pants","girly frilly blouse and flared skirt","pastel ribbon dress, lace trim","neat blouse and tailored trousers","elegant knit and midi skirt","harajuku decora, colorful layers and hair clips","harajuku pop, clashing colors and accessories"],
   pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window","eyes closed grin, double peace sign","pointing toy gun at camera, smirk","tongue out, sparkle in eyes"],
-  scene: ["empty classroom at sunset","convenience store at midnight","amusement park at night","snowy street in daylight","dim arcade at night","neon-lit alley at night","rooftop under blue sky","bedroom with old CRT computer","earth seen from space","inside a car at night","empty backrooms, yellow wallpaper, fluorescent hum","deserted shopping mall at 3am, lights still on","empty indoor pool, eerie stillness","endless office corridor, flickering lights","vacant playground at dusk, no one around","empty parking garage at night, humming lights","liminal hotel hallway, repeating doors"],
+  scene: ["empty classroom at sunset","convenience store at midnight","family restaurant booth at night, glowing menu","amusement park at night","snowy street in daylight","dim arcade at night","neon-lit alley at night","rooftop under blue sky","bedroom with old CRT computer","earth seen from space","inside a car at night","empty backrooms, yellow wallpaper, fluorescent hum","deserted shopping mall at 3am, lights still on","empty indoor pool, eerie stillness","endless office corridor, flickering lights","vacant playground at dusk, no one around","empty parking garage at night, humming lights","liminal hotel hallway, repeating doors"],
   light: ["orange light through windows","bright white store light, wet asphalt","ferris wheel lights, neon bokeh","colorful machine lights glowing","car headlight flare, puddle reflections","warm interior light","monitor glow in a dark room","glitchy VHS sparkle highlights","teal neon city glow","flickering green fluorescent light","harsh overhead fluorescent, no shadows","dim emergency exit light glow","golden hour sunlight, long shadows","moonlight through curtains","rim light, deep shadows","harsh camera flash, dark background"],
   ar: ["--ar 4:3","--ar 16:9","--ar 9:16","--ar 1:1"]
 };
 
 const JA = {
-  // art
+  // art (norinori核)
+  "vivid lo-fi MV anime, high saturation":"ビビッドLo-fi MV調・高彩度",
   "vivid lo-fi MV anime, teal-warm color grade":"ビビッドLo-fi MV調・ティール＋暖色",
   "glossy teal-highlight eyes, heavy cheek blush":"うるうるシアン目・濃いチーク",
   "VHS grain, chromatic aberration, glitch":"VHSノイズ・色収差・グリッチ",
@@ -323,6 +325,7 @@ const JA = {
   // scene
   "empty classroom at sunset":"夕暮れの誰もいない教室",
   "convenience store at midnight":"深夜のコンビニ",
+  "family restaurant booth at night, glowing menu":"夜のファミレスのボックス席・光るメニュー",
   "amusement park at night":"夜の遊園地",
   "snowy street in daylight":"昼間の雪の街",
   "dim arcade at night":"夜の薄暗いゲーセン",
@@ -473,6 +476,22 @@ document.getElementById('copy').onclick=()=>{
   } else {
     copyFeedback(legacyCopy(txt));
   }
+};
+document.getElementById('preset').onclick=()=>{
+  // 観覧車セルフィーの勝ちパターンを一発で組む
+  document.querySelectorAll('.opt.on').forEach(c=>{ if(c.parentElement.id!=='ar') c.classList.remove('on'); });
+  sel.art=[]; ['subject','outfit','pose','scene','light'].forEach(k=>sel[k]=null);
+  const setOne=(id,en)=>{ const el=[...document.getElementById(id).children].find(c=>c.dataset.en===en); if(el){el.classList.add('on'); sel[id]=en;} };
+  const addArt=(en)=>{ const el=[...document.getElementById('art').children].find(c=>c.dataset.en===en); if(el){el.classList.add('on'); sel.art.push(en);} };
+  addArt("vivid lo-fi MV anime, high saturation");
+  addArt("glossy teal-highlight eyes, heavy cheek blush");
+  addArt("sparkle star highlights, neon glow");
+  setOne('subject','gyaru girl, pink twintails, flashy nails');
+  setOne('pose','eyes closed grin, double peace sign');
+  setOne('scene','amusement park at night');
+  setOne('light','ferris wheel lights, neon bokeh');
+  useRaw.checked=true;
+  render();
 };
 document.getElementById('rand').onclick=()=>{
   // art: multi-pick 2〜3個盛り合わせ
