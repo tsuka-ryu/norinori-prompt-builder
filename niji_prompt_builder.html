@@ -160,33 +160,39 @@
       <div class="opts" id="subject"></div>
     </div>
 
+    <!-- 画角 -->
+    <div class="card">
+      <div class="tag">03 / Framing — 画角・構図</div>
+      <div class="opts" id="framing"></div>
+    </div>
+
     <!-- 服装 -->
     <div class="card">
-      <div class="tag">03 / Outfit — 服装</div>
+      <div class="tag">04 / Outfit — 服装</div>
       <div class="opts" id="outfit"></div>
     </div>
 
     <!-- ポーズ -->
     <div class="card">
-      <div class="tag">04 / Pose — ポーズ・表情</div>
+      <div class="tag">05 / Pose — ポーズ・表情</div>
       <div class="opts" id="pose"></div>
     </div>
 
     <!-- 場所 -->
     <div class="card">
-      <div class="tag">05 / Scene — 場所・時間</div>
+      <div class="tag">06 / Scene — 場所</div>
       <div class="opts" id="scene"></div>
     </div>
 
     <!-- 背景の光 -->
     <div class="card full">
-      <div class="tag">06 / Lighting — 背景・光源</div>
+      <div class="tag">07 / Lighting — 光源・時間帯</div>
       <div class="opts" id="light"></div>
     </div>
 
     <!-- 参照 -->
     <div class="card full">
-      <div class="tag">07 / References — 参照</div>
+      <div class="tag">08 / References — 参照</div>
       <div class="field">
         <label>参照画像 URL（任意・先頭に入る / 例: https://s.mj.run/xxxx）</label>
         <input type="text" id="refurl" placeholder="https://s.mj.run/...">
@@ -203,7 +209,7 @@
 
     <!-- カスタム + パラメータ -->
     <div class="card full">
-      <div class="tag">08 / Params — 仕上げ</div>
+      <div class="tag">09 / Params — 仕上げ</div>
       <div class="field">
         <label>追加したい単語（任意・カンマ区切り）</label>
         <input type="text" id="extra" placeholder="例: holding melon soda, neon bokeh">
@@ -245,11 +251,12 @@
 <script>
 const DATA = {
   art: ["vivid lo-fi MV anime, high saturation","vivid lo-fi MV anime, teal-warm color grade","glossy teal-highlight eyes, heavy cheek blush","sparkle star highlights, neon glow","VHS grain, chromatic aberration, glitch","cel shading, painterly hair highlights","high contrast, dark background, film grain"],
+  framing: ["full body shot","knee-up shot","cowboy shot, thigh-up","waist-up shot","upper body, bust shot","close-up, face focus","extreme close-up","wide shot, full scene"],
   subject: ["anime girl","two anime girls","three anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair","anime girl, ponytail","anime girl, bob cut","anime girl, hime cut, black hair","anime girl, red hair, braid","anime girl, pink short hair","anime girl, glasses, low ponytail","anime girl, freckles, curly hair","anime girl, half-up hair, hair clips","tan gyaru girl, aqua eyes, drill twintails","tan gyaru girl, bleached blonde hair","kuro gyaru, dark tan, long lashes","gyaru girl, pink twintails, flashy nails","tan gyaru girl, white highlights, heart pupils"],
   outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee","glossy silver futuristic jacket","green satin dress, jewelry","bridal dress with veil","oversized graphic tee and cargo pants","cropped hoodie and baggy jeans","plaid skirt, layered tops, chunky sneakers","varsity jacket and pleated mini skirt","y2k crop top and low-rise jeans","all-black mode outfit, oversized silhouette","monochrome layered coat and wide trousers","asymmetric black dress, structured","long minimalist mode coat","vintage thrift mix, oversized cardigan","retro patterned shirt and corduroy pants","girly frilly blouse and flared skirt","pastel ribbon dress, lace trim","neat blouse and tailored trousers","elegant knit and midi skirt","harajuku decora, colorful layers and hair clips","harajuku pop, clashing colors and accessories"],
   pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window","eyes closed grin, double peace sign","pointing toy gun at camera, smirk","tongue out, sparkle in eyes"],
-  scene: ["empty classroom at sunset","convenience store at midnight","family restaurant booth at night, glowing menu","amusement park at night","snowy street in daylight","dim arcade at night","neon-lit alley at night","rooftop under blue sky","bedroom with old CRT computer","earth seen from space","inside a car at night","empty backrooms, yellow wallpaper, fluorescent hum","deserted shopping mall at 3am, lights still on","empty indoor pool, eerie stillness","endless office corridor, flickering lights","vacant playground at dusk, no one around","empty parking garage at night, humming lights","liminal hotel hallway, repeating doors"],
-  light: ["orange light through windows","bright white store light, wet asphalt","ferris wheel lights, neon bokeh","colorful machine lights glowing","car headlight flare, puddle reflections","warm interior light","monitor glow in a dark room","glitchy VHS sparkle highlights","teal neon city glow","flickering green fluorescent light","harsh overhead fluorescent, no shadows","dim emergency exit light glow","golden hour sunlight, long shadows","moonlight through curtains","rim light, deep shadows","harsh camera flash, dark background"],
+  scene: ["empty classroom","convenience store","family restaurant booth","amusement park","snowy street","arcade","back alley","rooftop","bedroom with old CRT computer","earth seen from space","inside a car","empty backrooms, yellow wallpaper","deserted shopping mall","empty indoor pool, eerie stillness","endless office corridor","vacant playground","empty parking garage","liminal hotel hallway, repeating doors"],
+  light: ["orange light through windows","bright white store light, wet asphalt","ferris wheel lights, neon bokeh","colorful machine lights glowing","car headlight flare, puddle reflections","warm interior light","monitor glow in a dark room","glitchy VHS sparkle highlights","teal neon city glow","flickering green fluorescent light","harsh overhead fluorescent, no shadows","dim emergency exit light glow","soft daylight, clear blue sky","golden hour sunlight, long shadows","moonlight through curtains","rim light, deep shadows","harsh camera flash, dark background"],
   ar: ["--ar 4:3","--ar 16:9","--ar 9:16","--ar 1:1"]
 };
 
@@ -262,6 +269,15 @@ const JA = {
   "sparkle star highlights, neon glow":"スパークル・ネオン発光",
   "cel shading, painterly hair highlights":"セル塗り・厚塗り髪ツヤ",
   "high contrast, dark background, film grain":"高コントラスト・暗背景・粒状",
+  // framing
+  "full body shot":"全身",
+  "knee-up shot":"膝上",
+  "cowboy shot, thigh-up":"腿上（カウボーイショット）",
+  "waist-up shot":"腰から上",
+  "upper body, bust shot":"バストアップ",
+  "close-up, face focus":"顔アップ",
+  "extreme close-up":"超アップ",
+  "wide shot, full scene":"引き・全景",
   // subject
   "anime girl":"女の子",
   "two anime girls":"女の子2人",
@@ -323,23 +339,23 @@ const JA = {
   "pointing toy gun at camera, smirk":"カメラに銃を向けてニヤリ",
   "tongue out, sparkle in eyes":"舌出し＋瞳キラキラ",
   // scene
-  "empty classroom at sunset":"夕暮れの誰もいない教室",
-  "convenience store at midnight":"深夜のコンビニ",
-  "family restaurant booth at night, glowing menu":"夜のファミレスのボックス席・光るメニュー",
-  "amusement park at night":"夜の遊園地",
-  "snowy street in daylight":"昼間の雪の街",
-  "dim arcade at night":"夜の薄暗いゲーセン",
-  "neon-lit alley at night":"夜のネオンの路地",
-  "rooftop under blue sky":"青空の屋上",
+  "empty classroom":"誰もいない教室",
+  "convenience store":"コンビニ",
+  "family restaurant booth":"ファミレスのボックス席",
+  "amusement park":"遊園地",
+  "snowy street":"雪の街",
+  "arcade":"ゲーセン",
+  "back alley":"裏路地",
+  "rooftop":"屋上",
   "bedroom with old CRT computer":"旧型PCのある寝室",
   "earth seen from space":"宇宙から見た地球",
-  "inside a car at night":"夜の車内",
-  "empty backrooms, yellow wallpaper, fluorescent hum":"バックルーム・黄ばんだ壁紙・蛍光灯のうなり",
-  "deserted shopping mall at 3am, lights still on":"深夜3時の無人モール・照明だけ点灯",
+  "inside a car":"車内",
+  "empty backrooms, yellow wallpaper":"バックルーム・黄ばんだ壁紙",
+  "deserted shopping mall":"無人のショッピングモール",
   "empty indoor pool, eerie stillness":"誰もいない屋内プール・不気味な静けさ",
-  "endless office corridor, flickering lights":"延々と続くオフィス廊下・明滅する照明",
-  "vacant playground at dusk, no one around":"黄昏の誰もいない公園・人の気配なし",
-  "empty parking garage at night, humming lights":"夜の無人立体駐車場・うなる照明",
+  "endless office corridor":"延々と続くオフィス廊下",
+  "vacant playground":"誰もいない公園",
+  "empty parking garage":"無人の立体駐車場",
   "liminal hotel hallway, repeating doors":"リミナルなホテル廊下・同じドアの反復",
   // light
   "orange light through windows":"窓から差すオレンジの光",
@@ -354,6 +370,7 @@ const JA = {
   "flickering green fluorescent light":"明滅する緑がかった蛍光灯",
   "harsh overhead fluorescent, no shadows":"真上からの蛍光灯・影のない光",
   "dim emergency exit light glow":"非常口灯のほの暗い光",
+  "soft daylight, clear blue sky":"やわらかい昼光・青空",
   "golden hour sunlight, long shadows":"ゴールデンアワー・長い影",
   "moonlight through curtains":"カーテン越しの月明かり",
   "rim light, deep shadows":"リムライト＋深い影",
@@ -365,7 +382,7 @@ const JA = {
   "--ar 1:1":"正方形 1:1"
 };
 
-const sel = {art:[],subject:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 4:3"};
+const sel = {art:[],subject:null,framing:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 4:3"};
 
 function buildGroup(id){
   const box = document.getElementById(id);
@@ -392,7 +409,7 @@ function buildGroup(id){
     box.appendChild(b);
   });
 }
-['art','subject','outfit','pose','scene','light','ar'].forEach(buildGroup);
+['art','subject','framing','outfit','pose','scene','light','ar'].forEach(buildGroup);
 // default ar
 document.querySelectorAll('#ar .opt')[0].classList.add('on');
 
@@ -421,7 +438,7 @@ extra.oninput=render;
 
 function render(){
   // line 1: subject + outfit + pose
-  const l1=[sel.subject,sel.outfit,sel.pose].filter(Boolean).join(', ');
+  const l1=[sel.subject,sel.framing,sel.outfit,sel.pose].filter(Boolean).join(', ');
   // line 2: scene + light + extra
   const ex=extra.value.trim();
   const l2=[sel.scene,sel.light,ex].filter(Boolean).join(', ');
@@ -480,15 +497,16 @@ document.getElementById('copy').onclick=()=>{
 document.getElementById('preset').onclick=()=>{
   // 観覧車セルフィーの勝ちパターンを一発で組む
   document.querySelectorAll('.opt.on').forEach(c=>{ if(c.parentElement.id!=='ar') c.classList.remove('on'); });
-  sel.art=[]; ['subject','outfit','pose','scene','light'].forEach(k=>sel[k]=null);
+  sel.art=[]; ['subject','framing','outfit','pose','scene','light'].forEach(k=>sel[k]=null);
   const setOne=(id,en)=>{ const el=[...document.getElementById(id).children].find(c=>c.dataset.en===en); if(el){el.classList.add('on'); sel[id]=en;} };
   const addArt=(en)=>{ const el=[...document.getElementById('art').children].find(c=>c.dataset.en===en); if(el){el.classList.add('on'); sel.art.push(en);} };
   addArt("vivid lo-fi MV anime, high saturation");
   addArt("glossy teal-highlight eyes, heavy cheek blush");
   addArt("sparkle star highlights, neon glow");
   setOne('subject','gyaru girl, pink twintails, flashy nails');
+  setOne('framing','upper body, bust shot');
   setOne('pose','eyes closed grin, double peace sign');
-  setOne('scene','amusement park at night');
+  setOne('scene','amusement park');
   setOne('light','ferris wheel lights, neon bokeh');
   useRaw.checked=true;
   render();
@@ -505,7 +523,7 @@ document.getElementById('rand').onclick=()=>{
     });
   }
   // 単一選択グループ
-  ['subject','outfit','pose','scene','light'].forEach(id=>{
+  ['subject','framing','outfit','pose','scene','light'].forEach(id=>{
     const box=document.getElementById(id);
     const opts=[...box.children];
     if(!opts.length) return;
