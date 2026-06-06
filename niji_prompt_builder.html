@@ -144,7 +144,7 @@
   <header>
     <div class="kicker">// lo-fi anime · niji 7</div>
     <h1>PROMPT BUILDER</h1>
-    <p class="sub">選ぶだけで niji 用プロンプトが組み上がる。画風ワードは書かず <span style="color:var(--teal)">--sref</span> に任せる前提。被写体と背景を選んで、必要ならキャラ固定(<span style="color:var(--teal)">--ow</span>)をON。</p>
+    <p class="sub">選ぶだけで niji 用プロンプトが組み上がる。画風・被写体・背景を選んで本文を作り、必要なら参照画像URLや <span style="color:var(--teal)">--sref</span> / <span style="color:var(--teal)">--profile</span> で絵柄・キャラを寄せる。</p>
   </header>
 
   <div class="grid">
@@ -239,34 +239,40 @@
 
 <script>
 const DATA = {
-  art: ["soft painterly anime, muted pastels","delicate watercolor brushwork, hazy light","vivid lo-fi MV anime, high saturation","glitchy VHS aesthetic, film grain, sparkles"],
-  subject: ["anime girl","two anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair","anime catgirl, silver hair, cat ears","anime girl, long wavy hair, side profile","tan gyaru girl, aqua eyes, drill twintails"],
-  outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee","black maid dress with white apron","white sundress and straw hat","glossy silver futuristic jacket","green satin dress, jewelry","bridal dress with veil"],
-  pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window","expressionless soft stare, melancholy","holding skirt hem, looking back","eyes closed grin, double peace sign","pointing toy gun at camera, smirk","tongue out, sparkle in eyes"],
-  scene: ["empty classroom at sunset","convenience store at midnight","amusement park at night","snowy street in daylight","dim arcade at night","neon-lit alley at night","rooftop under blue sky","bedroom with old CRT computer","snowy forest in pale daylight","sunlit wheat field","sunny beach shore at noon","victorian sitting room by tall windows","earth seen from space","inside a car at night"],
-  light: ["orange light through windows","bright white store light, wet asphalt","ferris wheel lights, neon bokeh","blue sky, snow reflection","colorful machine lights glowing","car headlight flare, puddle reflections","warm interior light","monitor glow in a dark room","soft overcast snow light","warm backlight through wheat","hazy seaside daylight","glitchy VHS sparkle highlights","teal neon city glow"],
-  ar: ["--ar 16:9","--ar 4:3","--ar 9:16","--ar 1:1"]
+  art: ["vivid lo-fi MV anime, high saturation","glitchy VHS aesthetic, film grain, sparkles"],
+  subject: ["anime girl","two anime girls","three anime girls","anime girl, twin tails","anime girl, long black hair","anime girl, blonde twin tails","anime girl, short messy hair","anime girl, ponytail","anime girl, bob cut","anime girl, hime cut, black hair","anime girl, red hair, braid","anime girl, pink short hair","anime girl, glasses, low ponytail","anime girl, freckles, curly hair","anime girl, half-up hair, hair clips","tan gyaru girl, aqua eyes, drill twintails","tan gyaru girl, bleached blonde hair","kuro gyaru, dark tan, long lashes","gyaru girl, pink twintails, flashy nails","tan gyaru girl, white highlights, heart pupils"],
+  outfit: ["school uniform","oversized hoodie and choker","silver puffy jacket","sequined sheer dress","casual streetwear","winter coat and scarf","denim jacket over white tee","glossy silver futuristic jacket","green satin dress, jewelry","bridal dress with veil","oversized graphic tee and cargo pants","cropped hoodie and baggy jeans","plaid skirt, layered tops, chunky sneakers","varsity jacket and pleated mini skirt","y2k crop top and low-rise jeans","all-black mode outfit, oversized silhouette","monochrome layered coat and wide trousers","asymmetric black dress, structured","long minimalist mode coat","vintage thrift mix, oversized cardigan","retro patterned shirt and corduroy pants","girly frilly blouse and flared skirt","pastel ribbon dress, lace trim","neat blouse and tailored trousers","elegant knit and midi skirt","harajuku decora, colorful layers and hair clips","harajuku pop, clashing colors and accessories"],
+  pose: ["peace sign, big smile","cool confident expression","surprised expression, blushing","laughing, looking at camera","dynamic pose pointing at camera","selfie angle, wide lens","looking out the window","eyes closed grin, double peace sign","pointing toy gun at camera, smirk","tongue out, sparkle in eyes"],
+  scene: ["empty classroom at sunset","convenience store at midnight","amusement park at night","snowy street in daylight","dim arcade at night","neon-lit alley at night","rooftop under blue sky","bedroom with old CRT computer","earth seen from space","inside a car at night","empty backrooms, yellow wallpaper, fluorescent hum","deserted shopping mall at 3am, lights still on","empty indoor pool, eerie stillness","endless office corridor, flickering lights","vacant playground at dusk, no one around","empty parking garage at night, humming lights","liminal hotel hallway, repeating doors"],
+  light: ["orange light through windows","bright white store light, wet asphalt","ferris wheel lights, neon bokeh","colorful machine lights glowing","car headlight flare, puddle reflections","warm interior light","monitor glow in a dark room","glitchy VHS sparkle highlights","teal neon city glow","flickering green fluorescent light","harsh overhead fluorescent, no shadows","dim emergency exit light glow","golden hour sunlight, long shadows","moonlight through curtains","rim light, deep shadows","harsh camera flash, dark background"],
+  ar: ["--ar 4:3","--ar 16:9","--ar 9:16","--ar 1:1"]
 };
 
 const JA = {
   // art
-  "soft painterly anime, muted pastels":"淡い絵画調・くすみパステル",
-  "delicate watercolor brushwork, hazy light":"繊細な水彩タッチ・霞んだ光",
-  "melancholic storybook illustration":"物憂げな絵本イラスト",
   "vivid lo-fi MV anime, high saturation":"鮮やかなロフィMV風・高彩度",
   "glitchy VHS aesthetic, film grain, sparkles":"グリッチVHS風・粒状・キラキラ",
-  "90s retro anime cel look":"90年代レトロセル画風",
-  "cinematic anime still, soft film grain":"映画のワンシーン風・軽い粒状感",
   // subject
   "anime girl":"女の子",
   "two anime girls":"女の子2人",
+  "three anime girls":"女の子3人",
   "anime girl, twin tails":"ツインテの女の子",
+  "anime girl, ponytail":"ポニーテールの女の子",
+  "anime girl, bob cut":"ボブの女の子",
+  "anime girl, hime cut, black hair":"黒髪・姫カットの女の子",
+  "anime girl, red hair, braid":"赤髪・三つ編みの女の子",
+  "anime girl, pink short hair":"ピンクショートの女の子",
+  "anime girl, glasses, low ponytail":"メガネ＋低めポニーの女の子",
+  "anime girl, freckles, curly hair":"そばかす＋巻き髪の女の子",
+  "anime girl, half-up hair, hair clips":"ハーフアップ＋ヘアピンの女の子",
   "anime girl, long black hair":"黒髪ロングの女の子",
   "anime girl, blonde twin tails":"金髪ツインテの女の子",
   "anime girl, short messy hair":"短めくしゃ髪の女の子",
-  "anime catgirl, silver hair, cat ears":"銀髪・猫耳の少女",
-  "anime girl, long wavy hair, side profile":"巻き髪ロング・横顔",
   "tan gyaru girl, aqua eyes, drill twintails":"褐色ギャル・水色瞳・縦ロール",
+  "tan gyaru girl, bleached blonde hair":"褐色ギャル・ブリーチ金髪",
+  "kuro gyaru, dark tan, long lashes":"黒ギャル・濃い日焼け・つけまつげ",
+  "gyaru girl, pink twintails, flashy nails":"ピンクツインテ＋派手ネイルのギャル",
+  "tan gyaru girl, white highlights, heart pupils":"褐色ギャル・白メッシュ・ハート目",
   // outfit
   "school uniform":"制服",
   "oversized hoodie and choker":"ビッグパーカー＋チョーカー",
@@ -275,11 +281,26 @@ const JA = {
   "casual streetwear":"カジュアルなストリート服",
   "winter coat and scarf":"冬コート＋マフラー",
   "denim jacket over white tee":"白T＋デニムジャケット",
-  "black maid dress with white apron":"黒メイド服＋白エプロン",
-  "white sundress and straw hat":"白サンドレス＋麦わら帽子",
   "glossy silver futuristic jacket":"光沢シルバーの近未来ジャケット",
   "green satin dress, jewelry":"緑サテンのドレス＋アクセ",
   "bridal dress with veil":"ベール付きウェディングドレス",
+  "oversized graphic tee and cargo pants":"ビッグTシャツ＋カーゴパンツ",
+  "cropped hoodie and baggy jeans":"ショート丈パーカー＋バギージーンズ",
+  "plaid skirt, layered tops, chunky sneakers":"チェックスカート＋重ね着＋厚底スニーカー",
+  "varsity jacket and pleated mini skirt":"スタジャン＋プリーツミニスカ",
+  "y2k crop top and low-rise jeans":"Y2Kクロップトップ＋ローライズデニム",
+  "all-black mode outfit, oversized silhouette":"オールブラックのモード系・オーバーサイズ",
+  "monochrome layered coat and wide trousers":"モノトーンのレイヤードコート＋ワイドパンツ",
+  "asymmetric black dress, structured":"構築的なアシメ黒ドレス",
+  "long minimalist mode coat":"ミニマルなロングモードコート",
+  "vintage thrift mix, oversized cardigan":"古着MIX・オーバーサイズカーディガン",
+  "retro patterned shirt and corduroy pants":"レトロ柄シャツ＋コーデュロイパンツ",
+  "girly frilly blouse and flared skirt":"フリルブラウス＋フレアスカート",
+  "pastel ribbon dress, lace trim":"パステルのリボンワンピ＋レース",
+  "neat blouse and tailored trousers":"きれいめブラウス＋テーパードパンツ",
+  "elegant knit and midi skirt":"きれいめニット＋ミディスカート",
+  "harajuku decora, colorful layers and hair clips":"原宿デコラ・カラフル重ね着＋ヘアピン",
+  "harajuku pop, clashing colors and accessories":"原宿ポップ・色ミックス＋アクセ",
   // pose
   "peace sign, big smile":"ピース＋満面の笑み",
   "cool confident expression":"クールで自信げ",
@@ -288,8 +309,6 @@ const JA = {
   "dynamic pose pointing at camera":"カメラを指差すダイナミックポーズ",
   "selfie angle, wide lens":"自撮りアングル・広角",
   "looking out the window":"窓の外を見ている",
-  "expressionless soft stare, melancholy":"無表情で物憂げな眼差し",
-  "holding skirt hem, looking back":"裾をつまんで振り返る",
   "eyes closed grin, double peace sign":"目を閉じた笑顔＋ダブルピース",
   "pointing toy gun at camera, smirk":"カメラに銃を向けてニヤリ",
   "tongue out, sparkle in eyes":"舌出し＋瞳キラキラ",
@@ -302,26 +321,32 @@ const JA = {
   "neon-lit alley at night":"夜のネオンの路地",
   "rooftop under blue sky":"青空の屋上",
   "bedroom with old CRT computer":"旧型PCのある寝室",
-  "snowy forest in pale daylight":"淡い光の雪の森",
-  "sunlit wheat field":"陽の差す麦畑",
-  "sunny beach shore at noon":"昼下がりの砂浜",
-  "victorian sitting room by tall windows":"大窓のあるヴィクトリア調の居間",
   "earth seen from space":"宇宙から見た地球",
   "inside a car at night":"夜の車内",
+  "empty backrooms, yellow wallpaper, fluorescent hum":"バックルーム・黄ばんだ壁紙・蛍光灯のうなり",
+  "deserted shopping mall at 3am, lights still on":"深夜3時の無人モール・照明だけ点灯",
+  "empty indoor pool, eerie stillness":"誰もいない屋内プール・不気味な静けさ",
+  "endless office corridor, flickering lights":"延々と続くオフィス廊下・明滅する照明",
+  "vacant playground at dusk, no one around":"黄昏の誰もいない公園・人の気配なし",
+  "empty parking garage at night, humming lights":"夜の無人立体駐車場・うなる照明",
+  "liminal hotel hallway, repeating doors":"リミナルなホテル廊下・同じドアの反復",
   // light
   "orange light through windows":"窓から差すオレンジの光",
   "bright white store light, wet asphalt":"白い店内灯＋濡れたアスファルト",
   "ferris wheel lights, neon bokeh":"観覧車の光＋ネオンの玉ボケ",
-  "blue sky, snow reflection":"青空＋雪の照り返し",
   "colorful machine lights glowing":"筐体のカラフルな光",
   "car headlight flare, puddle reflections":"ヘッドライトの光＋水たまりの反射",
   "warm interior light":"暖かい室内光",
   "monitor glow in a dark room":"暗い部屋のモニターの光",
-  "soft overcast snow light":"曇り空の柔らかな雪明かり",
-  "warm backlight through wheat":"麦越しの暖かな逆光",
-  "hazy seaside daylight":"霞んだ海辺の陽光",
   "glitchy VHS sparkle highlights":"グリッチ風のキラめき",
   "teal neon city glow":"青緑ネオンの街明かり",
+  "flickering green fluorescent light":"明滅する緑がかった蛍光灯",
+  "harsh overhead fluorescent, no shadows":"真上からの蛍光灯・影のない光",
+  "dim emergency exit light glow":"非常口灯のほの暗い光",
+  "golden hour sunlight, long shadows":"ゴールデンアワー・長い影",
+  "moonlight through curtains":"カーテン越しの月明かり",
+  "rim light, deep shadows":"リムライト＋深い影",
+  "harsh camera flash, dark background":"強いカメラフラッシュ＋暗い背景",
   // ar
   "--ar 16:9":"横長 16:9",
   "--ar 4:3":"ややワイド 4:3",
@@ -329,9 +354,9 @@ const JA = {
   "--ar 1:1":"正方形 1:1"
 };
 
-const sel = {art:null,subject:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 16:9"};
+const sel = {art:null,subject:null,outfit:null,pose:null,scene:null,light:null,ar:"--ar 4:3"};
 
-function buildGroup(id, multi=false){
+function buildGroup(id){
   const box = document.getElementById(id);
   DATA[id].forEach(txt=>{
     const b = document.createElement('div');
@@ -350,7 +375,7 @@ function buildGroup(id, multi=false){
     box.appendChild(b);
   });
 }
-['art','subject','outfit','pose','scene','light','ar'].forEach(g=>buildGroup(g));
+['art','subject','outfit','pose','scene','light','ar'].forEach(buildGroup);
 // default ar
 document.querySelectorAll('#ar .opt')[0].classList.add('on');
 
